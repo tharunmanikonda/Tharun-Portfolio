@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ChevronDown, Mail, Phone, MapPin, Github, Linkedin, ExternalLink, Code, Database, Cloud, Settings, Award, Briefcase, GraduationCap, User, Menu, X, Zap, Activity, RefreshCw, Lock, FileUp, BarChart3, Cpu, GitBranch } from 'lucide-react';
 
 // API Base URL
-const API_BASE_URL = 'http://localhost:5001/api/demo';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api/demo';
 
 // Demo Card Component with Interactive Content
 const DemoCard = ({ icon, title, description, tags, isVisible, delay, children, demoId, forceExpanded = false }: {
