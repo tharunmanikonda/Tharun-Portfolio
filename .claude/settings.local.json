@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(npm run build)",
+      "Bash(npm cache clean --force)",
+      "Bash(npm install --legacy-peer-deps)",
+      "Bash(npm install ajv@^8 --legacy-peer-deps)",
+      "Bash(npm install node-fetch@2)",
+      "Bash(curl -s http://localhost:5001/api/demo/retry/unreliable-api?attempt=1)",
+      "Bash(cat:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
