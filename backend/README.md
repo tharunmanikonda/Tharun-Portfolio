@@ -28,7 +28,7 @@ npm run dev
 npm start
 ```
 
-The server will start on `http://localhost:5000`
+The server will start on `http://localhost:5001`
 
 ## API Endpoints
 
@@ -101,7 +101,7 @@ The server will start on `http://localhost:5000`
 
 ## Environment Variables
 
-See `.env.example` for required environment variables.
+See `backend/.env.example` for required environment variables.
 
 ## License
 

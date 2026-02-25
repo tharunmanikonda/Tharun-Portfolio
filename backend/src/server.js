@@ -2,75 +2,36 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 
-// Load environment variables
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Import routes
-const retryRoutes = require('./routes/retryRoutes');
-const webhookRoutes = require('./routes/webhookRoutes');
-const webhookProxyRoutes = require('./routes/webhookProxyRoutes');
-const dbRoutes = require('./routes/dbRoutes');
-const rateLimitRoutes = require('./routes/rateLimitRoutes');
-const cacheRoutes = require('./routes/cacheRoutes');
-const authRoutes = require('./routes/authRoutes');
-const videoUploadRoutes = require('./routes/videoUploadRoutes');
+// Routes
+const chatRoute = require('./routes/chatRoute');
+const playgroundRoute = require('./routes/playgroundRoute');
+app.use('/api/chat', chatRoute);
+app.use('/api/playground', playgroundRoute);
 
-// Use routes
-app.use('/api/demo/retry', retryRoutes);
-app.use('/api/demo/webhook', webhookRoutes);
-app.use('/api/demo/webhook-proxy', webhookProxyRoutes);
-app.use('/api/demo/database', dbRoutes);
-app.use('/api/demo/rate-limit', rateLimitRoutes);
-app.use('/api/demo/cache', cacheRoutes);
-app.use('/api/demo/auth', authRoutes);
-app.use('/api/demo/video', videoUploadRoutes);
-
-// Health check endpoint
+// Health check
 app.get('/health', (req, res) => {
-  res.json({
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime()
-  });
+  res.json({ status: 'healthy', timestamp: new Date().toISOString() });
 });
 
-// Root endpoint
-app.get('/', (req, res) => {
-  res.json({
-    message: 'Portfolio Backend API',
-    version: '1.0.0',
-    endpoints: {
-      retry: '/api/demo/retry',
-      webhook: '/api/demo/webhook',
-      database: '/api/demo/database',
-      rateLimit: '/api/demo/rate-limit',
-      cache: '/api/demo/cache',
-      auth: '/api/demo/auth'
-    }
-  });
-});
-
-// Error handling middleware
+// Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({
-    error: 'Something went wrong!',
-    message: err.message
-  });
+  res.status(500).json({ error: 'Something went wrong', message: err.message });
 });
 
-// Start server
 app.listen(PORT, () => {
-  console.log(`🚀 Portfolio Backend API running on port ${PORT}`);
-  console.log(`📍 Health check: http://localhost:${PORT}/health`);
+  console.log(`🚀 Portfolio API running on port ${PORT}`);
+  console.log(`💬 Chat endpoint: http://localhost:${PORT}/api/chat`);
 });
 
 module.exports = app;
