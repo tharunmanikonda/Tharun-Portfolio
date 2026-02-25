@@ -650,7 +650,32 @@ function Terminal() {
     push({ id: uid, type: 'input', text: raw, prompt });
     push({ id: aid, type: 'assistant', text: '' });
     setStreaming(true);
-    let out = '';
+
+    // Word-by-word drip queue
+    const queue: string[] = [];
+    let displayed = '';
+    let sseComplete = false;
+    let fullText = '';
+
+    const updateLine = (text: string) => setLines(prev => {
+      const c = [...prev];
+      const idx = c.findIndex(l => l.id === aid);
+      if (idx !== -1) c[idx] = { ...c[idx], text };
+      return c;
+    });
+
+    const drip = () => {
+      if (queue.length === 0) {
+        if (sseComplete) { setStreaming(false); return; }
+        setTimeout(drip, 16);
+        return;
+      }
+      displayed += queue.shift();
+      updateLine(displayed);
+      setTimeout(drip, 32 + Math.random() * 24);
+    };
+    setTimeout(drip, 0);
+
     try {
       const r = await fetch(CHAT_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: raw, history }) });
       if (!r.ok || !r.body) throw new Error();
@@ -661,13 +686,19 @@ function Terminal() {
         const parts = buf.split('\n'); buf = parts.pop() ?? '';
         for (const p of parts) {
           if (!p.startsWith('data: ')) continue;
-          const tok = p.slice(6); if (tok === '[DONE]') { setStreaming(false); setHistory(h => [...h, { role: 'user', content: raw }, { role: 'assistant', content: out }]); return; }
-          out += tok;
-          setLines(prev => { const c = [...prev]; const idx = c.findIndex(l => l.id === aid); if (idx !== -1) c[idx] = { ...c[idx], text: out }; return c; });
+          const tok = p.slice(6);
+          if (tok === '[DONE]') { sseComplete = true; setHistory(h => [...h, { role: 'user', content: raw }, { role: 'assistant', content: fullText }]); return; }
+          fullText += tok;
+          // split token into words, preserving spaces between them
+          tok.split(/(\s+)/).filter(Boolean).forEach(w => queue.push(w));
         }
       }
-    } catch { setLines(prev => { const c = [...prev]; const idx = c.findIndex(l => l.id === aid); if (idx !== -1) c[idx] = { ...c[idx], text: "Couldn't connect to backend — make sure it's running." }; return c; }); }
-    finally { setStreaming(false); }
+    } catch {
+      sseComplete = true;
+      if (!displayed) updateLine("Couldn't connect to backend — make sure it's running.");
+    } finally {
+      sseComplete = true;
+    }
   };
 
   const submit = async (e: React.FormEvent) => {
