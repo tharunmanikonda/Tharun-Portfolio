@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { RefreshCw, AlertTriangle, Zap, Shield, Database, Activity } from 'lucide-react';
 
-const BASE = (import.meta as any).env?.VITE_API_URL ?? '';
-const API = `${BASE}/api/playground`;
-const CHAT_API = `${BASE}/api/chat`;
+const API = '/api/playground';
+const CHAT_API = '/api/chat';
 
 function useVisible(threshold = 0.05) {
   const ref = useRef<HTMLElement>(null);
