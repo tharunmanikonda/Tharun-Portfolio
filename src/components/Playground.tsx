@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { RefreshCw, Github, AlertTriangle, Zap, Shield, Database, Activity } from 'lucide-react';
+import { RefreshCw, AlertTriangle, Zap, Shield, Database, Activity } from 'lucide-react';
 
-const API = 'http://localhost:5001/api/playground';
-const CHAT_API = 'http://localhost:5001/api/chat';
-const GITHUB_USER = 'tharunmanikonda';
-const REPOS = ['health-tracker-ai', 'QA--Agent', 'notchsafe', 'whopp-notifications'];
+const BASE = (import.meta as any).env?.VITE_API_URL ?? '';
+const API = `${BASE}/api/playground`;
+const CHAT_API = `${BASE}/api/chat`;
 
 function useVisible(threshold = 0.05) {
   const ref = useRef<HTMLElement>(null);
