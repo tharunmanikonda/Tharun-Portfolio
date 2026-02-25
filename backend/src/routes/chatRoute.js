@@ -324,11 +324,6 @@ router.post('/', async (req, res) => {
   res.setHeader('X-Accel-Buffering', 'no'); // disable nginx buffering
 
   try {
-    if (!isOnTopic(message)) {
-      await streamText(DEFAULT_RESPONSE, res);
-      return;
-    }
-
     if (process.env.GEMINI_API_KEY) {
       await streamGemini(message, history, res);
     } else if (process.env.ANTHROPIC_API_KEY) {
