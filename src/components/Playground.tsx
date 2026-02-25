@@ -618,7 +618,11 @@ function Terminal() {
   const prompt = mode === 'chat' ? 'tharun>' : 'guest@tharun:~$';
 
   useEffect(() => { outRef.current && (outRef.current.scrollTop = outRef.current.scrollHeight); }, [lines, streaming]);
-  useEffect(() => { inRef.current?.focus(); }, [mode]);
+  const hasMounted = useRef(false);
+  useEffect(() => {
+    if (!hasMounted.current) { hasMounted.current = true; return; }
+    inRef.current?.focus({ preventScroll: true });
+  }, [mode]);
 
   const push = (line: TLine) => setLines(p => [...p, line]);
   const clear = () => setLines(BOOT.map((t, i) => ({ id: `b${i}-${Date.now()}`, type: 'system', text: t })));
